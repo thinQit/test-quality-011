@@ -1,31 +1,26 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import { AuthProvider } from '@/providers/AuthProvider';
+import { ToastProvider } from '@/providers/ToastProvider';
 import Navigation from '@/components/layout/Navigation';
-import Toaster from '@/components/ui/Toaster';
-import AuthProvider from '@/providers/AuthProvider';
-import ToastProvider from '@/providers/ToastProvider';
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Test Quality Dashboard',
-  description: 'A simple CRUD dashboard app for managing Test Items.'
+  description: 'Minimal CRUD dashboard for managing Tests.'
 };
 
-export function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <AuthProvider>
           <ToastProvider>
             <Navigation />
-            <main className="min-h-screen bg-background text-foreground">
+            <main className="min-h-screen bg-background">
               {children}
             </main>
-            <Toaster />
           </ToastProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
-
-export default RootLayout;

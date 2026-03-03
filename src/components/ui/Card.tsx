@@ -1,41 +1,25 @@
-import { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import type { HTMLAttributes } from 'react';
+import clsx from 'clsx';
 
-interface CardProps {
-  children: ReactNode;
-  className?: string;
-}
+type CardProps = HTMLAttributes<HTMLDivElement>;
 
-export function Card({ children, className }: CardProps) {
+export default function Card({ className, ...props }: CardProps) {
   return (
-    <div className={cn('rounded-lg border border-border bg-white shadow-sm', className)}>
-      {children}
-    </div>
+    <div
+      className={clsx('rounded-md border border-border bg-card p-4', className)}
+      {...props}
+    />
   );
 }
 
-export function CardHeader({ children, className }: CardProps) {
-  return (
-    <div className={cn('border-b border-border px-4 py-3', className)}>
-      {children}
-    </div>
-  );
+export function CardHeader({ className, ...props }: CardProps) {
+  return <div className={clsx('mb-4 space-y-1', className)} {...props} />;
 }
 
-export function CardContent({ children, className }: CardProps) {
-  return (
-    <div className={cn('px-4 py-3', className)}>
-      {children}
-    </div>
-  );
+export function CardContent({ className, ...props }: CardProps) {
+  return <div className={clsx('space-y-2', className)} {...props} />;
 }
 
-export function CardFooter({ children, className }: CardProps) {
-  return (
-    <div className={cn('border-t border-border px-4 py-3', className)}>
-      {children}
-    </div>
-  );
+export function CardFooter({ className, ...props }: CardProps) {
+  return <div className={clsx('mt-4 flex items-center', className)} {...props} />;
 }
-
-export default Card;

@@ -1,37 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getBearerToken, verifyToken } from '@/lib/auth';
+import { getTokenFromHeader, verifyToken } from '@/lib/auth';
 
-const protectedPaths = ['/api/test-items', '/api/users', '/api/auth/me'];
+export const runtime = 'nodejs';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isProtected = protectedPaths.some((path) => pathname.startsWith(path));
 
-  if (!isProtected) {
+  if (!pathname.startsWith('/api/')) {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith('/api/test-items') && request.method === 'GET') {
+  if (
+    pathname.startsWith('/api/auth') ||
+    pathname === '/api/health'
+  ) {
     return NextResponse.next();
   }
 
-  const token = getBearerToken(request.headers.get('authorization'));
-  if (!token) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  const isWrite = request.method !== 'GET';
+  const isProtectedTests = pathname.startsWith('/api/tests');
+
+  if (isWrite && isProtectedTests) {
+    const token = getTokenFromHeader(request.headers.get('Authorization'));
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    try {
+      verifyToken(token);
+    } catch (_error) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
   }
 
-  try {
-    const payload = verifyToken(token);
-    const headers = new Headers(request.headers);
-    headers.set('x-user-id', payload.sub);
-    headers.set('x-user-role', payload.role);
-
-    return NextResponse.next({ request: { headers } });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
-  }
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ['/api/:path*']
 };

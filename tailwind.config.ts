@@ -13,8 +13,7 @@ const config: Config = {
         muted: 'var(--muted)',
         border: 'var(--border)',
         error: 'var(--error)',
-        success: 'var(--success)',
-        'muted-foreground': 'var(--secondary)'
+        success: 'var(--success)'
       },
       borderRadius: {
         DEFAULT: 'var(--radius)'

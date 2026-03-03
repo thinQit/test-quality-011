@@ -1,41 +1,38 @@
-'use client';
-import { InputHTMLAttributes, forwardRef } from 'react';
-import { cn } from '@/lib/utils';
+import { forwardRef } from 'react';
+import type { InputHTMLAttributes } from 'react';
+import clsx from 'clsx';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   error?: string;
-  helperText?: string;
-}
+};
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, helperText, className, id, ...props }, ref) => {
-    const inputId = id || props.name || Math.random().toString(36).slice(2);
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  { label, error, className, id, ...props },
+  ref
+) {
+  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
-    return (
-      <div className="space-y-1">
-        {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-foreground">
-            {label}
-          </label>
+  return (
+    <div className="space-y-1">
+      {label && (
+        <label htmlFor={inputId} className="block text-sm font-medium text-foreground">
+          {label}
+        </label>
+      )}
+      <input
+        id={inputId}
+        ref={ref}
+        className={clsx(
+          'w-full rounded-md border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted',
+          error && 'border-error focus:ring-error',
+          className
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={cn(
-            'w-full px-3 py-2 border rounded-md transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-            error ? 'border-error' : 'border-border',
-            className
-          )}
-          {...props}
-        />
-        {error && <p className="text-sm text-error">{error}</p>}
-        {helperText && !error && <p className="text-sm text-muted-foreground">{helperText}</p>}
-      </div>
-    );
-  }
-);
+        {...props}
+      />
+      {error && <p className="text-xs text-error">{error}</p>}
+    </div>
+  );
+});
 
-Input.displayName = 'Input';
 export default Input;

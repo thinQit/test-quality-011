@@ -1,18 +1,15 @@
-import { cn } from '@/lib/utils';
+import type { HTMLAttributes } from 'react';
+import clsx from 'clsx';
 
-interface SpinnerProps {
-  className?: string;
-}
+type SpinnerProps = HTMLAttributes<HTMLDivElement>;
 
-export function Spinner({ className }: SpinnerProps) {
+export default function Spinner({ className, ...props }: SpinnerProps) {
   return (
     <div
+      className={clsx('inline-block h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent', className)}
       role="status"
-      aria-live="polite"
       aria-label="Loading"
-      className={cn('h-5 w-5 animate-spin rounded-full border-2 border-muted border-t-primary', className)}
+      {...props}
     />
   );
 }
-
-export default Spinner;

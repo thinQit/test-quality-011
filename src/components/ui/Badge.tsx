@@ -1,28 +1,29 @@
-import { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import type { HTMLAttributes } from 'react';
+import clsx from 'clsx';
 
-type Variant = 'default' | 'secondary' | 'success' | 'warning' | 'error';
+type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'secondary';
 
-const variants: Record<Variant, string> = {
-  default: 'bg-primary/10 text-primary',
-  secondary: 'bg-neutral-100 text-neutral-600',
+type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
+  variant?: BadgeVariant;
+};
+
+const variantClasses: Record<BadgeVariant, string> = {
+  default: 'bg-muted text-foreground',
   success: 'bg-green-100 text-green-700',
   warning: 'bg-yellow-100 text-yellow-700',
   error: 'bg-red-100 text-red-700',
+  secondary: 'bg-slate-100 text-slate-700'
 };
 
-interface BadgeProps {
-  children: ReactNode;
-  variant?: Variant;
-  className?: string;
-}
-
-export function Badge({ children, variant = 'default', className }: BadgeProps) {
+export default function Badge({ variant = 'default', className, ...props }: BadgeProps) {
   return (
-    <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium', variants[variant], className)}>
-      {children}
-    </span>
+    <span
+      className={clsx(
+        'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium',
+        variantClasses[variant],
+        className
+      )}
+      {...props}
+    />
   );
 }
-
-export default Badge;

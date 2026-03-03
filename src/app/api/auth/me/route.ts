@@ -1,33 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
-import { getBearerToken, verifyToken } from '@/lib/auth';
+import db from '@/lib/db';
+import { getTokenFromHeader, verifyToken } from '@/lib/auth';
+
+function sanitizeUser(user: { id: string; email: string; name: string; role: string; createdAt: Date; updatedAt: Date }) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString()
+  };
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getBearerToken(request.headers.get('authorization'));
+    const token = getTokenFromHeader(request.headers.get('Authorization'));
     if (!token) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const payload = verifyToken(token);
-    const user = await prisma.user.findUnique({
-      where: { id: payload.sub },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    const userId = typeof payload.sub === 'string' ? payload.sub : null;
+    if (!userId) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
 
+    const user = await db.user.findUnique({ where: { id: userId } });
     if (!user) {
       return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: user }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to fetch user' }, { status: 500 });
+    return NextResponse.json({ success: true, data: sanitizeUser(user) });
+  } catch (_error) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 }

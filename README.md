@@ -1,75 +1,87 @@
-# test-quality-011
+# Test Quality Dashboard
 
-A simple CRUD dashboard app for managing Test Items with a responsive UI, health endpoint, and extensible architecture for authentication and RBAC.
+A minimal CRUD dashboard app for creating, viewing, editing, and deleting Test records. Includes a dashboard list, detail pages, and health endpoint for service monitoring.
 
 ## Features
-- Responsive dashboard layout
-- CRUD-ready API structure
-- Health check endpoint
-- Tailwind CSS styling and reusable UI components
-- Auth and toast providers
-- Jest + Playwright testing setup
+- CRUD API for Tests
+- Dashboard, create, detail, and import pages
+- CSV import/export endpoints
+- Health endpoint with optional DB check
+- Tailwind-based UI scaffold
+- Prisma ORM with SQLite
 
 ## Tech Stack
 - Next.js 14 (App Router)
-- React 18
 - TypeScript
+- Prisma ORM (SQLite)
 - Tailwind CSS
-- Prisma ORM (SQLite dev)
-- Jest + Testing Library
-- Playwright
+- Jest + Playwright (configured)
 
 ## Prerequisites
 - Node.js 18+
 - npm
 
 ## Quick Start
+
 ```bash
-bash install.sh
+./install.sh
 # or on Windows
-powershell -ExecutionPolicy Bypass -File install.ps1
+./install.ps1
 ```
-Then run:
+
+Then:
+
 ```bash
 npm run dev
 ```
 
 ## Environment Variables
-Create `.env` from `.env.example`:
-- `DATABASE_URL` - Prisma database connection string
-- `JWT_SECRET` - JWT signing secret
-- `NEXT_PUBLIC_API_URL` - Base URL for API requests
+
+Copy `.env.example` to `.env` and set:
+
+- `DATABASE_URL` - SQLite DB URL (default: `file:./dev.db`)
+- `JWT_SECRET` - Secret for JWT signing
+- `NEXT_PUBLIC_API_URL` - Base API URL for client fetches
 
 ## Project Structure
+
 ```
 src/
-  app/            # App Router layout, pages, and API routes
-  components/     # UI and layout components
-  lib/            # Utilities and API helpers
-  providers/      # Auth and Toast providers
-  types/          # Shared TypeScript types
-prisma/           # Prisma schema and migrations
+  app/            Next.js routes and API handlers
+  components/     Reusable UI components
+  providers/      Auth and toast providers
+  lib/            Utilities, auth, prisma client
+  types/          Shared TypeScript types
+prisma/           Prisma schema and migrations
 ```
 
-## API Endpoints (Planned)
-- `GET /api/health`
-- `GET /api/test-items`
-- `GET /api/test-items/:id`
-- `POST /api/test-items`
-- `PUT /api/test-items/:id`
-- `DELETE /api/test-items/:id`
+## API Endpoints
+
+- `GET /api/health` - Health status
+- `GET /api/tests` - List tests (page, pageSize, q, status)
+- `POST /api/tests` - Create test (auth required)
+- `GET /api/tests/:id` - Get test
+- `PUT /api/tests/:id` - Update test (auth required)
+- `DELETE /api/tests/:id` - Delete test (auth required)
+- `POST /api/tests/import` - CSV import (auth required)
+- `GET /api/tests/export` - CSV export
 
 ## Available Scripts
-- `npm run dev` - Start development server
+
+- `npm run dev` - Start dev server
 - `npm run build` - Build production app
 - `npm run start` - Start production server
-- `npm run lint` - Lint codebase
-- `npm run test` - Run unit tests
+- `npm run lint` - Run ESLint
+- `npm run test` - Run Jest
 - `npm run test:e2e` - Run Playwright tests
 
 ## Testing
-- Unit tests with Jest and Testing Library
-- E2E tests with Playwright
+
+```bash
+npm run test
+npm run test:e2e
+```
 
 ## Notes
-This scaffold includes foundational UI components, providers, and configuration for expanding the Test Items CRUD experience.
+- Read endpoints are public by default; write endpoints require JWT auth.
+- Update Prisma schema and run `npx prisma db push` after changes.
